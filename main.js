@@ -1,138 +1,3 @@
-/*
-// Функция для преобразования строки в 32-битное число
-function stringToUint32(str) {
-    let uint32 = 0;
-    for (let i = 0; i < str.length; i++) {
-        uint32 += str.charCodeAt(i) << (8 * i);
-    }
-    return uint32;
-}
-
-// Функция для преобразования 32-битного числа в строку
-function uint32ToString(uint32) {
-    let str = '';
-    for (let i = 0; i < 4; i++) {
-        str += String.fromCharCode((uint32 >> (8 * i)) & 0xFF);
-    }
-    return str;
-}
-
-// Функция для генерации подключей
-function generateSubkeys(key) {
-    let subkeys = [];
-    for (let i = 0; i < 8; i++) {
-        subkeys.push(parseInt(key.slice(i * 8, (i + 1) * 8), 16));
-    }
-    return subkeys;
-}
-
-// Функция F (может быть расширена с использованием S-блоков)
-function F(R) {
-    return R;
-}
-
-// Функция для сдвига влево на 11 бит
-function leftShift11(R) {
-    return ((R << 11) | (R >>> (32 - 11))) >>> 0;
-}
-
-// Функция шифрования блока
-function encryptBlock(block, key) {
-    let subkeys = generateSubkeys(key);
-    let L = stringToUint32(block.slice(0, 4));
-    let R = stringToUint32(block.slice(4, 8));
-
-    for (let i = 1; i <= 32; i++) {
-        let V = R;
-        let j = (i < 25) ? (i - 1) % 8 : (32 - i) % 8;
-        R = (R + subkeys[j]) % Math.pow(2, 32);
-        R = F(R);
-        R = leftShift11(R);
-        R = R ^ L;
-        L = V;
-    }
-
-    return uint32ToString(L) + uint32ToString(R);
-}
-
-// Функция дешифрования блока
-function decryptBlock(block, key) {
-    let subkeys = generateSubkeys(key);
-    let L = stringToUint32(block.slice(0, 4));
-    let R = stringToUint32(block.slice(4, 8));
-
-    for (let i = 1; i <= 32; i++) {
-        let V = L;
-        let j = (i <= 8) ? (i - 1) % 8 : (32 - i) % 8;
-        L = (L + subkeys[j]) % Math.pow(2, 32);
-        L = F(L);
-        L = leftShift11(L);
-        L = L ^ R;
-        R = V;
-    }
-
-    return uint32ToString(L) + uint32ToString(R);
-}
-
-// Функция для дополнения текста до 8 байт
-function padText(text) {
-    let paddingLength = 8 - (text.length % 8);
-    if (paddingLength === 8) return text; // Если текст уже кратен 8 байтам
-    let padding = String.fromCharCode(paddingLength).repeat(paddingLength);
-    return text + padding;
-}
-
-// Функция для удаления дополнения
-function unpadText(text) {
-    let paddingLength = text.charCodeAt(text.length - 1);
-    return text.slice(0, text.length - paddingLength);
-}
-
-// Функция для шифрования текста
-function encryptText(text, key) {
-    let encryptedText = '';
-    let paddedText = padText(text); // Дополняем текст до 8 байт
-
-    for (let i = 0; i < paddedText.length; i += 8) {
-        let block = paddedText.slice(i, i + 8);
-        let encryptedBlock = encryptBlock(block, key); // Шифруем блок
-        encryptedText += encryptedBlock;
-    }
-
-    return encryptedText;
-}
-
-// Функция для дешифрования текста
-function decryptText(encryptedText, key) {
-    let decryptedText = '';
-
-    for (let i = 0; i < encryptedText.length; i += 8) {
-        let block = encryptedText.slice(i, i + 8);
-        let decryptedBlock = decryptBlock(block, key); // Расшифровываем блок
-        decryptedText += decryptedBlock;
-    }
-
-    // Убираем дополнение
-    return unpadText(decryptedText);
-}
-
-// Обработчики событий для кнопок
-document.getElementById('encryptBtn').addEventListener('click', function () {
-    let text = document.getElementById('text').value;
-    let key = document.getElementById('key').value;
-    let encrypted = encryptText(text, key);
-    document.getElementById('result').value = encrypted;
-});
-
-document.getElementById('decryptBtn').addEventListener('click', function () {
-    let text = document.getElementById('text').value;
-    let key = document.getElementById('key').value;
-    let decrypted = decryptText(text, key);
-    document.getElementById('result').value = decrypted;
-});
-*/
-
-// блоки
 const XBox = [
     4, 10, 9, 2, 13, 8, 0, 14, 6, 11, 1, 12, 7, 15, 5, 3,
     14, 11, 4, 12, 6, 13, 15, 10, 2, 3, 8, 1, 0, 7, 5, 9,
@@ -162,7 +27,7 @@ function Part32InLine(part32) {
     return str;
 }
 
-//Генерации подключей
+//Генерация подключей
 function GenerateAdditionalKeys(key) {
     let addkeys = [];
     for (let i = 0; i < 8; i++) {
@@ -182,12 +47,12 @@ function F(R) {
     return result;
 }
 
-//Сдвига влево на 11 бит
+//Сдвиг влево на 11 бит
 function leftShift11(R) {
     return ((R << 11) | (R >>> (32 - 11))) >>> 0;
 }
 
-//Шифрования блока
+//Шифрование блока
 function encryptBlock(block, key) {
     let addkeys = GenerateAdditionalKeys(key);
     let L = RoundOfEncryption32(block.slice(0, 4));
@@ -242,14 +107,14 @@ function enteredText(text) {
     return text + adding;
 }
 
-//Удаления дополнения
+//Удаление дополнения
 function deletingText(text) {
     let addingLength = text.charCodeAt(text.length - 1);
     console.log(`Удаление дополнения: ${addingLength} байт`);
     return text.slice(0, text.length - addingLength);
 }
 
-//Шифрования текста
+//Шифрование текста
 function encryptText(text, key) {
     if (key.length !== 32) {
         alert('Длина ключа должна быть 32 символа в 16-ричной системе');
@@ -268,7 +133,7 @@ function encryptText(text, key) {
     return encryptedText;
 }
 
-//Дешифрования текста
+//Дешифрование текста
 function decryptText(encryptedText, key) {
     if (key.length !== 32) {
         alert('Длина ключа должна быть 32 символа в 16-ричной системе');
@@ -283,11 +148,9 @@ function decryptText(encryptedText, key) {
         decryptedText += decryptedBlock;
     }
 
-    // Убираем дополнение
     return deletingText(decryptedText);
 }
 
-// Обработчики событий для кнопок
 document.getElementById('encryptButton').addEventListener('click', function () {
     let text = document.getElementById('text').value;
     let key = document.getElementById('key').value;
